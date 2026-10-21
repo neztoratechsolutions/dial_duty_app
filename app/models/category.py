@@ -22,5 +22,5 @@ class Category(Base):
         onupdate=datetime.utcnow
     )
 
-    # stores = relationship("Store", back_populates="category")
+    stores = relationship("Store", back_populates="category")
     products = relationship("Product", back_populates="category")
