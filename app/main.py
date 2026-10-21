@@ -1,5 +1,7 @@
-
 from fastapi import FastAPI
+
+
+from app.routers.users import router as auth_router
 
 app = FastAPI(
     title="Dial Duty API",
@@ -8,14 +10,5 @@ app = FastAPI(
 )
 
 
-@app.get("/")
-def home():
-    return {
-        "success": True,
-        "message": "Dial Duty API is running"
-    }
+app.include_router(auth_router)
 
-
-@app.get("/health")
-def health_check():
-    return {"status": "healthy"}
