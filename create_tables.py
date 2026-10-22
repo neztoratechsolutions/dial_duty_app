@@ -1,4 +1,3 @@
-
 from app.database import Base, engine
 from app.models import (
     Role,
@@ -10,6 +9,7 @@ from app.models import (
     Product,
     ProductQA,
     Coupon,
+    product_image,
 )
 
 
