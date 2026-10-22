@@ -5,6 +5,7 @@ from app.routers.auth import router as auth_router
 from app.routers.categories import router as category_router
 from app.routers.products import router as product_router
 from app.routers.product_image import router as product_image_router
+from app.routers.product_qa import router as product_qa_router
 
 app = FastAPI(
     title="Dial Duty API",
@@ -23,3 +24,4 @@ app.include_router(auth_router)
 app.include_router(category_router)
 app.include_router(product_router)
 app.include_router(product_image_router)
+app.include_router(product_qa_router)
