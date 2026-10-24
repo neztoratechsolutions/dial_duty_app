@@ -10,6 +10,7 @@ from app.models import (
     ProductQA,
     Coupon,
     product_image,
+    admin,
 )
 
 
