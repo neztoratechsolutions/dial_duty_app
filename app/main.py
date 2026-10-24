@@ -8,6 +8,7 @@ from app.routers.product_image import router as product_image_router
 from app.routers.product_qa import router as product_qa_router
 from app.routers.delivery_areas import router as delivery_areas_router
 from app.routers.delivery_boys import router as delivery_boys_router
+from app.routers.stores import router as stores_router
 
 app = FastAPI(
     title="Dial Duty API",
@@ -29,3 +30,4 @@ app.include_router(product_image_router)
 app.include_router(product_qa_router)
 app.include_router(delivery_areas_router)
 app.include_router(delivery_boys_router)
+app.include_router(stores_router)
