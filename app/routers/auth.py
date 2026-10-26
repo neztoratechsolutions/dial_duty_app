@@ -31,7 +31,7 @@ OTP_EXPIRY_MINUTES = 5
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 MAX_OTP_ATTEMPTS = 5
 
-ALLOWED_ROLES = {"customer", "delivery boy", "vendor"}
+ALLOWED_ROLES = {"customer", "delivery boy", "vendor", "admin"}
 
 # Development use only.
 # For production, use Redis or database storage.
@@ -406,4 +406,100 @@ def verify_otp(
             "email": user.email,
             "role_id": user.role_id
         }
+    }
+
+
+
+
+# -------------------- GET ALL USERS --------------------
+
+@router.get("/users", status_code=200)
+def get_all_users(
+    role: str | None = None,
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+):
+    if skip < 0:
+        raise HTTPException(
+            status_code=400,
+            detail="skip must be greater than or equal to 0",
+        )
+
+    if limit < 1 or limit > 500:
+        raise HTTPException(
+            status_code=400,
+            detail="limit must be between 1 and 500",
+        )
+
+    query = db.query(User).join(Role, User.role_id == Role.id)
+
+    if role:
+        role_name = normalize_role(role)
+
+        query = query.filter(
+            func.lower(func.trim(Role.name)) == role_name
+        )
+
+    users = (
+        query.order_by(User.id.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+    return {
+        "total": query.count(),
+        "skip": skip,
+        "limit": limit,
+        "users": [
+            {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "mobile_number": user.mobile_number,
+                "address": user.address,
+                "role_id": user.role_id,
+                "role": user.role.name if user.role else None,
+                "referral_code": user.referral_code,
+                "referred_by": user.referred_by,
+                "created_at": user.created_at,
+                "updated_at": user.updated_at,
+            }
+            for user in users
+        ],
+    }
+
+
+# -------------------- GET USER BY ID --------------------
+
+@router.get("/users/{user_id}", status_code=200)
+def get_user_by_id(
+    user_id: int,
+    db: Session = Depends(get_db),
+):
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
+
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "mobile_number": user.mobile_number,
+        "address": user.address,
+        "role_id": user.role_id,
+        "role": user.role.name if user.role else None,
+        "referral_code": user.referral_code,
+        "referred_by": user.referred_by,
+        "created_at": user.created_at,
+        "updated_at": user.updated_at,
     }
