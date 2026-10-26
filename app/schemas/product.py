@@ -1,3 +1,4 @@
+
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
@@ -7,26 +8,21 @@ from pydantic import BaseModel, Field, ConfigDict
 
 class ProductCreate(BaseModel):
     product_name: str = Field(..., min_length=1, max_length=150)
+    role_id: int = Field(..., gt=0)
     store_id: int = Field(..., gt=0)
     category_id: int = Field(..., gt=0)
-
-    brand: Optional[str] = Field(default=None, max_length=100)
-    price: Decimal = Field(default=Decimal("0"), ge=0, max_digits=12, decimal_places=2)
-    stock_quantity: int = Field(default=0, ge=0)
-
-    created_by: int = Field(..., gt=0)
+    brand: Optional[str] = None
+    price: Decimal = Field(..., ge=0)
+    stock_quantity: int = Field(..., ge=0)
 
 
 class ProductUpdate(BaseModel):
-    product_name: Optional[str] = Field(default=None, min_length=1, max_length=150)
-    store_id: Optional[int] = Field(default=None, gt=0)
-    category_id: Optional[int] = Field(default=None, gt=0)
-
-    brand: Optional[str] = Field(default=None, max_length=100)
-    price: Optional[Decimal] = Field(default=None, ge=0, max_digits=12, decimal_places=2)
-    stock_quantity: Optional[int] = Field(default=None, ge=0)
-
-    updated_by: Optional[int] = Field(default=None, gt=0)
+    product_name: Optional[str] = Field(None, min_length=1, max_length=150)
+    store_id: Optional[int] = Field(None, gt=0)
+    category_id: Optional[int] = Field(None, gt=0)
+    brand: Optional[str] = None
+    price: Optional[Decimal] = Field(None, ge=0)
+    stock_quantity: Optional[int] = Field(None, ge=0)
 
 
 class ProductResponse(BaseModel):
