@@ -11,6 +11,8 @@ from app.models import (
     Coupon,
     product_image,
     admin,
+    service,
+    service_booking,
 )
 
 
