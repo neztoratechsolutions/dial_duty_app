@@ -56,3 +56,9 @@ class Product(Base):
         back_populates="product",
         cascade="all, delete-orphan"
     )
+
+    images = relationship(
+    "ProductImage",
+    back_populates="product",
+    cascade="all, delete-orphan"
+)

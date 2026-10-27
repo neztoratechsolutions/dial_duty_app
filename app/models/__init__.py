@@ -8,6 +8,8 @@ from app.models.delivery_boy import DeliveryBoy
 from app.models.product import Product
 from app.models.product_qa import ProductQA
 from app.models.coupon import Coupon
+from app.models.product_image import ProductImage
+from app.models.product_review import ProductReview
 
 __all__ = [
     "Role",
@@ -19,4 +21,6 @@ __all__ = [
     "Product",
     "ProductQA",
     "Coupon",
+    "ProductImage",
+    "ProductReview",
 ]

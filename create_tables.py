@@ -11,6 +11,13 @@ from app.models import (
     ProductQA,
     Coupon,
 )
+from app.models.reel import Reel
+from app.models.referral import Referral, ReferralCode
+from app.models.reward import RewardTransaction
+from app.models.wishlist import Wishlist
+from app.models.admin import StoreAdmin
+from app.models.product_image import ProductImage
+from app.models.product_review import ProductReview
 
 
 def create_tables():

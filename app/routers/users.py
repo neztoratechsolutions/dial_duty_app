@@ -12,16 +12,19 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from jose import jwt
+from jose import jwt,JWTError
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.database import get_db
 from app.models.user import User
 from app.models.role import Role
 
+
 load_dotenv()
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
+security = HTTPBearer()
 SMTP_EMAIL = os.getenv("SMTP_EMAIL")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
@@ -407,3 +410,45 @@ def verify_otp(
             "role_id": user.role_id
         }
     }
+
+
+# -------------------- GET LOGGED-IN USER PROFILE --------------------
+
+@router.get("/me",status_code = 200)
+def get_logged_in_user(
+    credentials : HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    token = credentials.credentials
+
+    try:
+        payload = jwt.decode(
+            token , 
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        user_id = payload.get("sub")
+
+        if not user_id:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid token"
+            )
+    except Exception:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired token"
+        )
+    
+    user = db.query(User).filter(
+        User.id == int(user_id)
+    ).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    return user
