@@ -31,7 +31,7 @@ OTP_EXPIRY_MINUTES = 5
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 MAX_OTP_ATTEMPTS = 5
 
-ALLOWED_ROLES = {"customer", "delivery boy", "vendor", "admin"}
+ALLOWED_ROLES = {"customer", "delivery boy", "vendor", "admin" , "super admin"}
 
 # Development use only.
 # For production, use Redis or database storage.
