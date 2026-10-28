@@ -18,6 +18,8 @@ from app.models.wishlist import Wishlist
 from app.models.admin import StoreAdmin
 from app.models.product_image import ProductImage
 from app.models.product_review import ProductReview
+from app.models.service import Service
+from app.models.qc_staff import QCStaff
 
 
 def create_tables():

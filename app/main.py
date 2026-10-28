@@ -15,6 +15,12 @@ from app.routers.delivery_areas import router as delivery_areas_router
 from app.routers.delivery_boys import router as delivery_boys_router
 from app.routers.admin import router as admin_router
 from app.routers import product_reviews
+from app.routers import services
+from app.routers import qc_staff
+
+
+
+
 
 
 app = FastAPI(
@@ -38,6 +44,8 @@ app.include_router(delivery_areas_router)
 app.include_router(delivery_boys_router)
 app.include_router(product_reviews.router)
 app.include_router(admin_router)
+app.include_router(services.router)
+app.include_router(qc_staff.router)
 
 app.mount(
     "/uploads",

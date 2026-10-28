@@ -10,6 +10,7 @@ from app.models.product_qa import ProductQA
 from app.models.coupon import Coupon
 from app.models.product_image import ProductImage
 from app.models.product_review import ProductReview
+from app.models.qc_staff import QCStaff
 
 __all__ = [
     "Role",
@@ -23,4 +24,5 @@ __all__ = [
     "Coupon",
     "ProductImage",
     "ProductReview",
+    "QCStaff",
 ]
