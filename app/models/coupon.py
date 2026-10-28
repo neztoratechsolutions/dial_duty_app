@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 from sqlalchemy import (
@@ -33,7 +32,11 @@ class Coupon(Base):
     end_date = Column(DateTime(timezone=True), nullable=True)
 
     store_id = Column(
-        Integer, ForeignKey("stores.id"), nullable=False
+        Integer, ForeignKey("stores.id"), nullable=True
+    )
+
+    category_id = Column(
+        Integer, ForeignKey("categories.id"), nullable=False
     )
 
     status = Column(Boolean, default=True, nullable=False)
@@ -46,3 +49,4 @@ class Coupon(Base):
     )
 
     store = relationship("Store", back_populates="coupons")
+    category = relationship("Category")
