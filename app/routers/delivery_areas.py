@@ -41,6 +41,7 @@ def create_delivery_area(
         pincode=area_data.pincode,
         city=area_data.city,
         state=area_data.state,
+        category_id=area_data.category_id,
         status=area_data.status
     )
 
