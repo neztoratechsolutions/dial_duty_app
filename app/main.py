@@ -11,6 +11,7 @@ from app.routers.delivery_boys import router as delivery_boys_router
 from app.routers.stores import router as stores_router
 from app.routers.admin import router as admin_router
 from app.routers.roles import router as role_router
+from app.routers.service import router as service_router
 from app.routers.service_booking import router as service_booking_router
 
 app = FastAPI(
@@ -36,4 +37,5 @@ app.include_router(delivery_boys_router)
 app.include_router(stores_router)
 app.include_router(admin_router)
 app.include_router(role_router)
+app.include_router(service_router)
 app.include_router(service_booking_router)
