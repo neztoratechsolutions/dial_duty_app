@@ -13,6 +13,8 @@ from app.routers.admin import router as admin_router
 from app.routers.roles import router as role_router
 from app.routers.service import router as service_router
 from app.routers.service_booking import router as service_booking_router
+from app.routers.coupons import router as coupon_router
+
 
 app = FastAPI(
     title="Dial Duty API",
@@ -39,3 +41,4 @@ app.include_router(admin_router)
 app.include_router(role_router)
 app.include_router(service_router)
 app.include_router(service_booking_router)
+app.include_router(coupon_router)
