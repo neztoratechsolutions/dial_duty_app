@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from typing import Optional, Literal
 
@@ -13,7 +12,7 @@ class StoreAdminCreate(BaseModel):
     email: EmailStr
     phone: str = Field(min_length=10, max_length=20)
     role: AdminRole = "store admin"
-    store_id: Optional[int] = None
+    category_id: Optional[int] = None
     status: bool = True
 
 
@@ -22,7 +21,7 @@ class StoreAdminUpdate(BaseModel):
     email: Optional[EmailStr] = None
     phone: Optional[str] = Field(default=None, min_length=10, max_length=20)
     role: Optional[AdminRole] = None
-    store_id: Optional[int] = None
+    category_id: Optional[int] = None
     status: Optional[bool] = None
 
 
@@ -32,8 +31,7 @@ class StoreAdminResponse(BaseModel):
     email: str
     phone: str
     role: str
-    store_id: Optional[int] = None
-    store_name: Optional[str] = None
+    category_id: Optional[int] = None
     category_name: Optional[str] = None
     status: bool
     created_at: Optional[datetime] = None
