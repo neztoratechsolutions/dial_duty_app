@@ -24,9 +24,9 @@ class StoreAdmin(Base):
 
     role = Column(String(50), nullable=False, default="store admin")
 
-    store_id = Column(
+    category_id = Column(
         Integer,
-        ForeignKey("stores.id"),
+        ForeignKey("categories.id"),
         nullable=True
     )
 
@@ -42,4 +42,4 @@ class StoreAdmin(Base):
         onupdate=datetime.utcnow
     )
 
-    store = relationship("Store")
+    category = relationship("Category")
