@@ -4,17 +4,20 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from app.database import get_db
 from app.models.admin import StoreAdmin
-from app.models.store import Store
+from app.models.category import Category
 from app.schemas.admin import (
     StoreAdminCreate,
     StoreAdminUpdate,
 )
 
-router = APIRouter(prefix="/api/admins",tags=["Admin Management"])
+router = APIRouter(
+    prefix="/api/admins",
+    tags=["Admin Management"]
+)
 
 
 def format_admin(admin: StoreAdmin):
-    store = admin.store
+    category = admin.category
 
     return {
         "id": admin.id,
@@ -22,35 +25,34 @@ def format_admin(admin: StoreAdmin):
         "email": admin.email,
         "phone": admin.phone,
         "role": admin.role,
-        "store_id": admin.store_id,
-        "store_name": store.store_name if store else None,
-        "category_name": (
-            store.category.name
-            if store and store.category
-            else None
-        ),
+        "category_id": admin.category_id,
+        "category_name": category.name if category else None,
         "status": admin.status,
         "created_at": admin.created_at,
         "updated_at": admin.updated_at,
     }
 
 
-def validate_store(db: Session, store_id: int | None):
-    if store_id is None:
+def validate_category(db: Session, category_id: int | None):
+    if category_id is None:
         return
 
-    store = db.query(Store).filter(Store.id == store_id).first()
+    category = (
+        db.query(Category)
+        .filter(Category.id == category_id)
+        .first()
+    )
 
-    if not store:
+    if not category:
         raise HTTPException(
-            status_code=404,
-            detail="Store not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Category not found"
         )
 
 
 def admin_query(db: Session):
     return db.query(StoreAdmin).options(
-        joinedload(StoreAdmin.store).joinedload(Store.category)
+        joinedload(StoreAdmin.category)
     )
 
 
@@ -60,13 +62,13 @@ def create_admin(
     payload: StoreAdminCreate,
     db: Session = Depends(get_db)
 ):
-    validate_store(db, payload.store_id)
+    validate_category(db, payload.category_id)
 
     if db.query(StoreAdmin).filter(
         StoreAdmin.email == str(payload.email)
     ).first():
         raise HTTPException(
-            status_code=409,
+            status_code=status.HTTP_409_CONFLICT,
             detail="Email already exists"
         )
 
@@ -74,7 +76,7 @@ def create_admin(
         StoreAdmin.phone == payload.phone
     ).first():
         raise HTTPException(
-            status_code=409,
+            status_code=status.HTTP_409_CONFLICT,
             detail="Phone number already exists"
         )
 
@@ -84,7 +86,7 @@ def create_admin(
             email=str(payload.email),
             phone=payload.phone,
             role=payload.role,
-            store_id=payload.store_id,
+            category_id=payload.category_id,
             status=payload.status
         )
 
@@ -105,15 +107,15 @@ def create_admin(
         db.rollback()
         print("ADMIN CREATE ERROR:", repr(e))
         raise HTTPException(
-            status_code=409,
-            detail="Email, phone, or store constraint failed"
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email, phone, or category constraint failed"
         )
 
     except SQLAlchemyError as e:
         db.rollback()
         print("ADMIN DATABASE ERROR:", repr(e))
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Unable to create admin"
         )
 
@@ -123,15 +125,23 @@ def create_admin(
 def get_all_admins(
     db: Session = Depends(get_db)
 ):
-    admins = admin_query(db).order_by(
-        StoreAdmin.id.desc()
-    ).all()
+    try:
+        admins = admin_query(db).order_by(
+            StoreAdmin.id.desc()
+        ).all()
 
-    return {
-        "message": "Admins retrieved successfully",
-        "total": len(admins),
-        "data": [format_admin(admin) for admin in admins]
-    }
+        return {
+            "message": "Admins retrieved successfully",
+            "total": len(admins),
+            "data": [format_admin(admin) for admin in admins]
+        }
+
+    except SQLAlchemyError as e:
+        print("ADMIN FETCH ERROR:", repr(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Unable to fetch admins"
+        )
 
 
 # 3. GET ADMIN BY ID
@@ -146,7 +156,7 @@ def get_admin_by_id(
 
     if not admin:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Admin not found"
         )
 
@@ -169,7 +179,7 @@ def update_admin(
 
     if not admin:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Admin not found"
         )
 
@@ -178,8 +188,8 @@ def update_admin(
         exclude_none=True
     )
 
-    if "store_id" in update_data:
-        validate_store(db, update_data["store_id"])
+    if "category_id" in update_data:
+        validate_category(db, update_data["category_id"])
 
     if "email" in update_data:
         update_data["email"] = str(update_data["email"])
@@ -191,7 +201,7 @@ def update_admin(
 
         if existing_email:
             raise HTTPException(
-                status_code=409,
+                status_code=status.HTTP_409_CONFLICT,
                 detail="Email already exists"
             )
 
@@ -203,7 +213,7 @@ def update_admin(
 
         if existing_phone:
             raise HTTPException(
-                status_code=409,
+                status_code=status.HTTP_409_CONFLICT,
                 detail="Phone number already exists"
             )
 
@@ -226,15 +236,15 @@ def update_admin(
         db.rollback()
         print("ADMIN UPDATE ERROR:", repr(e))
         raise HTTPException(
-            status_code=409,
-            detail="Email, phone, or store constraint failed"
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email, phone, or category constraint failed"
         )
 
     except SQLAlchemyError as e:
         db.rollback()
         print("ADMIN UPDATE DATABASE ERROR:", repr(e))
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Unable to update admin"
         )
 
@@ -251,7 +261,7 @@ def delete_admin(
 
     if not admin:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Admin not found"
         )
 
@@ -268,6 +278,6 @@ def delete_admin(
         db.rollback()
         print("ADMIN DELETE DATABASE ERROR:", repr(e))
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Unable to delete admin"
         )
