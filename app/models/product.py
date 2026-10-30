@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 from sqlalchemy import (
@@ -38,6 +37,27 @@ class Product(Base):
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     updated_by = Column(Integer, ForeignKey("users.id"), nullable=True)
 
+    # Super Admin Approval Fields
+    approval_status = Column(
+        String(20),
+        nullable=False,
+        default="pending",
+        server_default="pending"
+    )
+    approved_by = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=True
+    )
+    approved_at = Column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    rejection_reason = Column(
+        String(500),
+        nullable=True
+    )
+
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(
         DateTime(timezone=True),
@@ -50,6 +70,7 @@ class Product(Base):
 
     creator = relationship("User", foreign_keys=[created_by])
     updater = relationship("User", foreign_keys=[updated_by])
+    approver = relationship("User", foreign_keys=[approved_by])
 
     questions_answers = relationship(
         "ProductQA",
