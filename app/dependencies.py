@@ -65,6 +65,7 @@ def require_vendor_or_admin(
     return current_user
 
 
+
 def require_super_admin(
     current_user: User = Depends(get_current_user),
 ):
