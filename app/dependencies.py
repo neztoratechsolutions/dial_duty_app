@@ -63,3 +63,21 @@ def require_vendor_or_admin(
         )
 
     return current_user
+
+
+def require_super_admin(
+    current_user: User = Depends(get_current_user),
+):
+    role_name = (
+        current_user.role.name.strip().lower()
+        .replace("_", " ")
+        .replace("-", " ")
+    ) if current_user.role else ""
+
+    if role_name not in ("super admin", "superadmin"):
+        raise HTTPException(
+            status_code=403,
+            detail="Only Super Admin can approve or reject products"
+        )
+
+    return current_user
