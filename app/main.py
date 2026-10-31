@@ -16,6 +16,7 @@ from app.routers.service_booking import router as service_booking_router
 from app.routers.coupons import router as coupon_router
 from app.routers.product_status import router as product_status_router
 from app.routers.featured_products import router as featured_products_router
+from app.routers.banner import router as banner_router
 
 
 app = FastAPI(
@@ -46,3 +47,4 @@ app.include_router(service_booking_router)
 app.include_router(coupon_router)
 app.include_router(product_status_router)
 app.include_router(featured_products_router)
+app.include_router(banner_router)
