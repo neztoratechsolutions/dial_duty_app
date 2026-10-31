@@ -13,6 +13,7 @@ from app.models import (
     admin,
     service,
     service_booking,
+    feature_product
 )
 
 
